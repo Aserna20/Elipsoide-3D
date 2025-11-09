@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Elipsoide WGS84 (h = 0)</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Elipsoide WGS84 (h = 0)</h1>
+    <p>Visualización 3D del elipsoide terrestre con marcación de coordenadas</p>
+  </header>
+
+  <main>
+    <aside>
+      <h2>Marcar punto</h2>
+      <form method="POST">
+        <label>Latitud (°):</label>
+        <input type="number" step="any" name="lat" placeholder="Ej: 4.711">
+        <label>Longitud (°):</label>
+        <input type="number" step="any" name="lon" placeholder="Ej: -74.072">
+        <button type="submit">Graficar</button>
+      </form>
+      <p style="margin-top:10px; color:#666;">El globo se puede rotar con el mouse.</p>
+    </aside>
+
+    <section>
+      {{ grafica|safe }}
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 — Proyecto de Geodesia Geométrica</p>
+  </footer>
+</body>
+</html>
