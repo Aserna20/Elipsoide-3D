@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, flash
 import plotly.graph_objects as go
 import numpy as np
 import math
 
 app = Flask(__name__)
+app.secret_key = "geodesia2025"  # Necesario para mostrar mensajes flash
 
 def gms_a_decimal(g, m, s):
     """Convierte grados, minutos, segundos a grados decimales."""
@@ -15,11 +16,11 @@ def index():
     lat, lon = None, None
 
     if request.method == 'POST':
-        # Intentar leer valores decimales
+        # Intentar leer coordenadas decimales
         lat_str = request.form.get('lat')
         lon_str = request.form.get('lon')
 
-        # Leer grados, minutos y segundos
+        # Leer GMS
         try:
             lat_g = float(request.form.get('lat_g') or 0)
             lat_m = float(request.form.get('lat_m') or 0)
@@ -30,6 +31,7 @@ def index():
         except ValueError:
             lat_g = lat_m = lat_s = lon_g = lon_m = lon_s = 0
 
+        # Usar decimal directo o convertir de GMS
         if lat_str and lon_str:
             lat = float(lat_str)
             lon = float(lon_str)
@@ -37,7 +39,16 @@ def index():
             lat = gms_a_decimal(lat_g, lat_m, lat_s)
             lon = gms_a_decimal(lon_g, lon_m, lon_s)
 
-    # Parámetros del elipsoide (WGS84)
+        # Validar rangos
+        if lat is not None and lon is not None:
+            if not (-90 <= lat <= 90):
+                flash("⚠️ Latitud fuera de rango: debe estar entre -90° y +90°")
+                lat = lon = None
+            elif not (-180 <= lon <= 180):
+                flash("⚠️ Longitud fuera de rango: debe estar entre -180° y +180°")
+                lat = lon = None
+
+    # Parámetros del elipsoide WGS84
     a = 6378137
     b = 6356752.3142
 
@@ -49,7 +60,7 @@ def index():
     Y = a * np.cos(V) * np.sin(U)
     Z = b * np.sin(V)
 
-    # Crear figura 3D azul oceánica
+    # Figura 3D color oceánico
     fig = go.Figure(data=[
         go.Surface(
             x=X, y=Y, z=Z,
@@ -59,7 +70,7 @@ def index():
         )
     ])
 
-    # Marcar punto
+    # Punto sobre el elipsoide si es válido
     if lat is not None and lon is not None:
         lat_r = math.radians(lat)
         lon_r = math.radians(lon)
@@ -72,10 +83,10 @@ def index():
             text=[f"{lat:.3f}°, {lon:.3f}°"],
             textposition="top center",
             marker=dict(size=6, color='red'),
-            name='Punto'
+            name='Punto válido'
         ))
 
-    # Ajuste visual
+    # Configuración visual del gráfico
     fig.update_layout(
         scene=dict(
             xaxis=dict(visible=False),
