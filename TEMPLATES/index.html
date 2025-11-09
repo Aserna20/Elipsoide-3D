@@ -2,54 +2,50 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Elipsoide WGS84 (h=0)</title>
+    <title>Geodesia Geométrica — Elipsoide h=0</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<style>
-    body {
-        background-image: url("{{ url_for('static', filename='earth_texture.jpg') }}");
-        background-size: cover;
-        background-attachment: fixed;
-        background-position: center;
-    }
-</style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-
-<header class="header-custom">
-    <div class="d-flex">
-        <h1 class="h1">Visualización del Elipsoide WGS84 (h=0)</h1>
-    </div>
-</header>
-
-<nav class="nav-custom">
-    <button class="btn active-nav-btn">Inicio</button>
-</nav>
-
-<main class="main-content">
-    <section class="content-section active">
-        <h2>Elipsoide terrestre interactivo</h2>
-        <p>Visualiza el elipsoide terrestre en 3D con textura real del planeta Tierra. 
-           Ingresa una latitud y longitud para marcar una ubicación específica.</p>
-
-        <form method="POST" style="margin-bottom: 20px;">
-            <label for="lat">Latitud (°):</label>
-            <input type="number" step="any" name="lat" id="lat" required placeholder="Ej: 4.711">
-            <label for="lon">Longitud (°):</label>
-            <input type="number" step="any" name="lon" id="lon" required placeholder="Ej: -74.072">
-            <button type="submit" class="btn">Graficar punto</button>
-        </form>
-
-        <div style="width: 100%; max-width: 1000px; height: 600px; margin: auto;">
+<div class="container">
+    <!-- Elipsoide -->
+    <div class="left-panel">
+        <div style="width:100%; height:100%;">
             {{ graph_html|safe }}
         </div>
+    </div>
 
-        <p>Usa el mouse para rotar, acercar o alejar el globo terrestre.</p>
-    </section>
-</main>
+    <!-- Formulario -->
+    <div class="right-panel">
+        <h1>Programa: Elipsoide (h = 0)</h1>
 
-<footer class="footer-custom">
-    <p>Proyecto de Geodesia Geométrica © 2025</p>
-</footer>
+        <form method="POST">
+            <h3>Coordenadas decimales</h3>
+            <label>Latitud (°):</label>
+            <input type="number" step="any" name="lat" placeholder="Ej: 4.711">
+            <label>Longitud (°):</label>
+            <input type="number" step="any" name="lon" placeholder="Ej: -74.072">
 
+            <hr>
+
+            <h3>Coordenadas en GMS</h3>
+            <label>Latitud:</label>
+            <div style="display:flex; gap:8px;">
+                <input type="number" step="any" name="lat_g" placeholder="Grados">
+                <input type="number" step="any" name="lat_m" placeholder="Minutos">
+                <input type="number" step="any" name="lat_s" placeholder="Segundos">
+            </div>
+
+            <label>Longitud:</label>
+            <div style="display:flex; gap:8px;">
+                <input type="number" step="any" name="lon_g" placeholder="Grados">
+                <input type="number" step="any" name="lon_m" placeholder="Minutos">
+                <input type="number" step="any" name="lon_s" placeholder="Segundos">
+            </div>
+
+            <button type="submit">Graficar punto</button>
+        </form>
+    </div>
+</div>
 </body>
 </html>

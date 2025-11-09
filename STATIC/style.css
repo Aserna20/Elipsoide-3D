@@ -1,0 +1,91 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #001f3f, #0077b6);
+    color: #f5f5dc;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+/* Elipsoide a la izquierda */
+.left-panel {
+    flex: 0.6;
+    background-color: #002b5b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+/* Formulario a la derecha */
+.right-panel {
+    flex: 0.4;
+    background-color: #f5f5dc;
+    color: #001f3f;
+    padding: 40px 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-left: 5px solid #0077b6;
+}
+
+h1 {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #003566;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #002b5b;
+}
+
+input {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #aaa;
+    font-size: 0.9rem;
+    width: 100%;
+}
+
+button {
+    background-color: #0077b6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 15px;
+}
+
+button:hover {
+    background-color: #023e8a;
+}
+
+h3 {
+    font-size: 1rem;
+    margin-bottom: 5px;
+    color: #003566;
+}
+
+hr {
+    margin: 15px 0;
+    border: 1px solid #0077b6;
+}
