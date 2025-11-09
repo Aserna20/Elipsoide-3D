@@ -1,36 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Elipsoide WGS84 (h = 0)</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>Elipsoide WGS84 (h = 0)</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <header>
-    <h1>Elipsoide WGS84 (h = 0)</h1>
-    <p>Visualización 3D del elipsoide terrestre con marcación de coordenadas</p>
-  </header>
 
-  <main>
-    <aside>
-      <h2>Marcar punto</h2>
-      <form method="POST">
-        <label>Latitud (°):</label>
-        <input type="number" step="any" name="lat" placeholder="Ej: 4.711">
-        <label>Longitud (°):</label>
-        <input type="number" step="any" name="lon" placeholder="Ej: -74.072">
-        <button type="submit">Graficar</button>
-      </form>
-      <p style="margin-top:10px; color:#666;">El globo se puede rotar con el mouse.</p>
-    </aside>
+    <header class="header-custom">
+        <h1>Elipsoide WGS84 (h = 0)</h1>
+        <p>Visualización 3D del elipsoide terrestre — Geodesia Geométrica</p>
+    </header>
 
-    <section>
-      {{ grafica|safe }}
-    </section>
-  </main>
+    <main class="main-container">
+        <aside class="side-panel">
+            <h2>Marcar coordenadas</h2>
+            <form method="POST">
+                <label for="lat">Latitud (°):</label>
+                <input type="number" step="any" name="lat" placeholder="Ej: 4.711">
+                <label for="lon">Longitud (°):</label>
+                <input type="number" step="any" name="lon" placeholder="Ej: -74.072">
+                <button type="submit">Graficar punto</button>
+            </form>
+            <p class="nota">Usa el mouse para rotar, acercar o alejar el globo terrestre.</p>
+        </aside>
 
-  <footer>
-    <p>© 2025 — Proyecto de Geodesia Geométrica</p>
-  </footer>
+        <section class="graph-container">
+            {{ grafica|safe }}
+        </section>
+    </main>
+
+    <footer class="footer-custom">
+        <p>© 2025 - Proyecto Elipsoide WGS84 — Ingeniería Catastral y Geodesia</p>
+    </footer>
+
 </body>
 </html>
