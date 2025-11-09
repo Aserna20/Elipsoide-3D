@@ -2,37 +2,54 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Elipsoide WGS84 (h = 0)</title>
+    <title>Elipsoide WGS84 (h=0)</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+    body {
+        background-image: url("{{ url_for('static', filename='earth_texture.jpg') }}");
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+    }
+</style>
 </head>
 <body>
 
-    <header class="header-custom">
-        <h1>Elipsoide WGS84 (h = 0)</h1>
-        <p>Visualización 3D del elipsoide terrestre — Geodesia Geométrica</p>
-    </header>
+<header class="header-custom">
+    <div class="d-flex">
+        <h1 class="h1">Visualización del Elipsoide WGS84 (h=0)</h1>
+    </div>
+</header>
 
-    <main class="main-container">
-        <aside class="side-panel">
-            <h2>Marcar coordenadas</h2>
-            <form method="POST">
-                <label for="lat">Latitud (°):</label>
-                <input type="number" step="any" name="lat" placeholder="Ej: 4.711">
-                <label for="lon">Longitud (°):</label>
-                <input type="number" step="any" name="lon" placeholder="Ej: -74.072">
-                <button type="submit">Graficar punto</button>
-            </form>
-            <p class="nota">Usa el mouse para rotar, acercar o alejar el globo terrestre.</p>
-        </aside>
+<nav class="nav-custom">
+    <button class="btn active-nav-btn">Inicio</button>
+</nav>
 
-        <section class="graph-container">
-            {{ grafica|safe }}
-        </section>
-    </main>
+<main class="main-content">
+    <section class="content-section active">
+        <h2>Elipsoide terrestre interactivo</h2>
+        <p>Visualiza el elipsoide terrestre en 3D con textura real del planeta Tierra. 
+           Ingresa una latitud y longitud para marcar una ubicación específica.</p>
 
-    <footer class="footer-custom">
-        <p>© 2025 - Proyecto Elipsoide WGS84 — Ingeniería Catastral y Geodesia</p>
-    </footer>
+        <form method="POST" style="margin-bottom: 20px;">
+            <label for="lat">Latitud (°):</label>
+            <input type="number" step="any" name="lat" id="lat" required placeholder="Ej: 4.711">
+            <label for="lon">Longitud (°):</label>
+            <input type="number" step="any" name="lon" id="lon" required placeholder="Ej: -74.072">
+            <button type="submit" class="btn">Graficar punto</button>
+        </form>
+
+        <div style="width: 100%; max-width: 1000px; height: 600px; margin: auto;">
+            {{ graph_html|safe }}
+        </div>
+
+        <p>Usa el mouse para rotar, acercar o alejar el globo terrestre.</p>
+    </section>
+</main>
+
+<footer class="footer-custom">
+    <p>Proyecto de Geodesia Geométrica © 2025</p>
+</footer>
 
 </body>
 </html>

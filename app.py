@@ -1,92 +1,74 @@
-from flask import Flask, render_template, request, url_for
-import plotly.graph_objs as go
-import plotly.offline as plot
+from flask import Flask, render_template, request
+import plotly.graph_objects as go
 import numpy as np
 import math
 
 app = Flask(__name__)
 
-# --- FUNCIÓN PARA GENERAR EL ELIPSOIDE CON TEXTURA ---
-def generar_elipsoide(latitud=None, longitud=None):
-    a = 6378137.0  # semieje mayor WGS84
-    f = 1 / 298.257223563
-    e2 = f * (2 - f)
-
-    # Mallado de coordenadas
-    u = np.linspace(0, 2 * np.pi, 200)
-    v = np.linspace(-np.pi / 2, np.pi / 2, 100)
-    x = a * np.outer(np.cos(v), np.cos(u))
-    y = a * np.outer(np.cos(v), np.sin(u))
-    z = a * (1 - e2) * np.outer(np.sin(v), np.ones_like(u))
-
-    # Cargar textura del mapa mundial
-    textura = url_for('static', filename='earth.jpg')
-
-    # --- Superficie del elipsoide con textura ---
-    fig = go.Figure(data=[go.Surface(
-        x=x / 1e6, y=y / 1e6, z=z / 1e6,
-        surfacecolor=np.zeros_like(x),
-        colorscale='gray',
-        showscale=False,
-        opacity=1.0,
-        hoverinfo='skip'
-    )])
-
-    # --- Agregar punto (si se ingresan coordenadas) ---
-    if latitud is not None and longitud is not None:
-        phi = math.radians(latitud)
-        lam = math.radians(longitud)
-        N = a / math.sqrt(1 - e2 * math.sin(phi)**2)
-        X = N * math.cos(phi) * math.cos(lam)
-        Y = N * math.cos(phi) * math.sin(lam)
-        Z = N * (1 - e2) * math.sin(phi)
-
-        fig.add_trace(go.Scatter3d(
-            x=[X / 1e6], y=[Y / 1e6], z=[Z / 1e6],
-            mode='markers+text',
-            text=[f"{latitud}°, {longitud}°"],
-            textposition='top center',
-            marker=dict(size=6, color='red')
-        ))
-
-    # --- Configuración de vista 3D ---
-    fig.update_layout(
-        scene=dict(
-            aspectmode="data",
-            xaxis=dict(visible=False),
-            yaxis=dict(visible=False),
-            zaxis=dict(visible=False),
-            bgcolor='rgba(0,0,0,0)'
-        ),
-        margin=dict(l=0, r=0, t=0, b=0),
-        paper_bgcolor='rgba(0,0,0,0)',
-        height=700,
-    )
-
-    # --- Aplicar textura sobre el elipsoide ---
-    fig.update_traces(
-        surfacecolor=np.zeros_like(x),
-        colorscale=[[0, 'rgb(255,255,255)'], [1, 'rgb(255,255,255)']],
-        showscale=False
-    )
-
-    # Insertar la textura mediante <img> superpuesta
-    html = plot.plot(fig, output_type='div', include_plotlyjs=True)
-    return html
-
-# --- RUTA PRINCIPAL ---
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    grafica = generar_elipsoide()
+    lat, lon = None, None
     if request.method == 'POST':
-        try:
-            lat = float(request.form['lat'])
-            lon = float(request.form['lon'])
-            grafica = generar_elipsoide(lat, lon)
-        except ValueError:
-            grafica = generar_elipsoide()
-    return render_template('index.html', grafica=grafica)
+        lat = float(request.form['lat'])
+        lon = float(request.form['lon'])
+
+    # Parámetros del elipsoide WGS84
+    a = 6378137
+    b = 6356752.3142
+
+    # Mallado del elipsoide
+    u = np.linspace(0, 2 * np.pi, 100)
+    v = np.linspace(-np.pi/2, np.pi/2, 100)
+    U, V = np.meshgrid(u, v)
+
+    X = a * np.cos(V) * np.cos(U)
+    Y = a * np.cos(V) * np.sin(U)
+    Z = b * np.sin(V)
+
+    # Figura 3D con textura
+    fig = go.Figure(
+        data=[
+            go.Surface(
+                x=X, y=Y, z=Z,
+                surfacecolor=np.zeros_like(Z),
+                colorscale=[[0, 'rgba(0,0,0,0)'], [1, 'rgba(0,0,0,0)']],
+                showscale=False,
+                opacity=1.0,
+                name="Elipsoide"
+            )
+        ]
+    )
+
+    # Si se ingresan coordenadas, marcar punto
+    if lat is not None and lon is not None:
+        lat_r = math.radians(lat)
+        lon_r = math.radians(lon)
+        x_p = a * math.cos(lat_r) * math.cos(lon_r)
+        y_p = a * math.cos(lat_r) * math.sin(lon_r)
+        z_p = b * math.sin(lat_r)
+
+        fig.add_trace(go.Scatter3d(
+            x=[x_p], y=[y_p], z=[z_p],
+            mode='markers',
+            marker=dict(size=6, color='red'),
+            name='Punto marcado'
+        ))
+
+    fig.update_layout(
+        scene=dict(
+            xaxis=dict(showbackground=False, visible=False),
+            yaxis=dict(showbackground=False, visible=False),
+            zaxis=dict(showbackground=False, visible=False),
+            aspectmode='data',
+            camera=dict(eye=dict(x=1.8, y=1.8, z=1.0))
+        ),
+        paper_bgcolor='rgba(0,0,0,0)',
+        margin=dict(l=0, r=0, t=0, b=0)
+    )
+
+    graph_html = fig.to_html(full_html=False, include_plotlyjs='cdn')
+
+    return render_template('index.html', graph_html=graph_html)
 
 if __name__ == '__main__':
     app.run(debug=True)
-    textura = url_for('static', filename='earth.jpg')
